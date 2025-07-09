@@ -1,25 +1,27 @@
-# Tdarr Pausarr
+# Pausarr
 
-Automatically pause a Tdarr container when Jellyfin is playing media.
+Automatically pause containers when Jellyfin has an active session.
 
-I prefer to let Tdarr transcode whenever but it can slow down Jellyfin if it's
-playing media. This simple script should prevent slowdowns and keep streaming
-snappy. I use it to check every 5 seconds and it works well.
+I prefer to let Tdarr transcode whenever but it can slow down Jellyfin if
+someone is using it. This simple script should prevent slowdowns and keep
+Jellyfin snappy. I use it to check every 5 seconds and it works well.
+
+Originally written for Tdarr but can be now be used with multiple containers.
 
 ## Usage
 
 Environment variables:
 - `JELLYFIN_API_KEY`: Your Jellyfin API key (required)
 - `JELLYFIN_URL`: The URL of your Jellyfin server (default: http://localhost:8096)
-- `TDARR_CONTAINER_NAME`: The name of the Tdarr container (default: tdarr)
+- `CONTAINERS_TO_PAUSE`: Comma separated list of containers to pause (default: tdarr,sonarr)
 - `CHECK_INTERVAL`: How often to check for active streams in seconds (default: 30)
 
 With systemd:
 
-`/etc/systemd/system/tdarr-pausarr.service`
+`/etc/systemd/system/pausarr.service`
 ```bash
 [Unit]
-Description=Jellyfin Tdarr Manager
+Description=Pausarr
 After=docker.service jellyfin.service
 Wants=docker.service
 
@@ -28,7 +30,7 @@ Type=simple
 User=root
 Environment="JELLYFIN_API_KEY=<API_KEY>"
 Environment="JELLYFIN_URL=http://localhost:8096"
-Environment="TDARR_CONTAINER_NAME=tdarr"
+Environment="CONTAINERS_TO_PAUSE=tdarr,sonarr"
 Environment="CHECK_INTERVAL=30"
 ExecStart=<PATH_TO_SCRIPT>
 Restart=always
@@ -42,8 +44,8 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable tdarr-pausarr
-sudo systemctl start tdarr-pausarr
+sudo systemctl enable pausarr
+sudo systemctl start pausarr
 ```
 
 ## License
